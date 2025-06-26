@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마인크래프트 낚시 시뮬레이터 (낮/밤/날씨 반영)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2b2b2b;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #3c3c3c;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            max-width: 650px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #555;
+        }
+        h1 {
+            color: #87CEEB; /* SkyBlue */
+            margin-bottom: 25px;
+            font-size: 2.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #b0b0b0;
+        }
+        .input-group input[type="number"],
+        .input-group select {
+            width: calc(100% - 22px);
+            padding: 12px;
+            border: 1px solid #555;
+            border-radius: 8px;
+            background-color: #4a4a4a;
+            color: #e0e0e0;
+            font-size: 1.1em;
+            box-sizing: border-box;
+        }
+        .input-group input[type="number"]:focus,
+        .input-group select:focus {
+            border-color: #87CEEB;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.5);
+        }
+        button {
+            background-color: #87CEEB; /* SkyBlue */
+            color: #2b2b2b;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #6bbce6;
+            transform: translateY(-2px);
+        }
+        .results {
+            background-color: #4a4a4a;
+            padding: 25px;
+            margin-top: 30px;
+            border-radius: 10px;
+            text-align: left;
+            border: 1px dashed #666;
+        }
+        .results h2 {
+            color: #98FB98; /* PaleGreen */
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            text-align: center;
+            border-bottom: 1px solid #666;
+            padding-bottom: 10px;
+        }
+        .results p {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        .results strong {
+            color: #FFD700; /* Gold */
+        }
+        .results ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        .results ul li {
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+        .results ul li::before {
+            content: '🎣';
+            position: absolute;
+            left: 0;
+            color: #FFD700;
+        }
+        .error-message {
+            color: #FF6347; /* Tomato */
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #bbb;
+            margin-top: 20px;
+            border-top: 1px dashed #555;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎣낚시 시뮬레이터</h1>
+        <div class="input-group">
+            <label for="fishingDurationMinutes">낚시할 총 현실 시간 (분):</label>
+            <input type="number" id="fishingDurationMinutes" min="1" value="240"> </div>
+        <div class="input-group">
+            <label for="luckOfSea">바다의 행운 마법 부여 레벨:</label>
+            <select id="luckOfSea">
+                <option value="0">0 (없음)</option>
+                <option value="1">I</option>
+                <option value="2">II</option>
+                <option value="3">III</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="lureLevel">미끼 마법 부여 레벨:</label>
+            <select id="lureLevel">
+                <option value="0">0 (없음)</option>
+                <option value="1">I</option>
+                <option value="2">II</option>
+                <option value="3">III</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="rainChance">하루 동안 비가 올 확률 (%) :</label>
+            <input type="number" id="rainChance" min="0" max="100" value="20">
+        </div>
+        <button onclick="calculateFishingResults()">결과 계산하기</button>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="results" class="results" style="display:none;">
+            <h2>✨ 예상 낚시 결과 ✨</h2>
+            <p>총 현실 낚시 시간: <strong><span id="displayDurationMinutes"></span>분</strong></p>
+            <p>마인크래프트 게임 내 경과 시간: <strong><span id="mcDays"></span>일 (<span id="mcHours"></span>시간)</strong></p>
+            <p>바다의 행운 레벨: <strong><span id="displayLuckLevel"></span></strong></p>
+            <p>미끼 레벨: <strong><span id="displayLureLevel"></span></strong></p>
+            <p>하루 동안 비 올 확률: <strong><span id="displayRainChance"></span>%</strong></p>
+            <hr style="border-color:#555; margin:15px 0;">
+            <p>예상 총 낚시 시도 횟수: <strong><span id="totalAttempts"></span>회</strong></p>
+            <p>낚은 물고기: <strong><span id="fishCount"></span>회</strong> (<span id="fishPercentage"></span>)</p>
+            <p>낚은 쓰레기: <strong><span id="junkCount"></span>회</strong> (<span id="junkPercentage"></span>)</p>
+            <p>낚은 보물: <strong><span id="treasureCount"></span>회</strong> (<span id="treasurePercentage"></span>)</p>
+            <h3>보물 세부 내역 (예상)</h3>
+            <ul id="treasureDetails">
+                </ul>
+            <div class="note">
+                <p><strong>참고:</strong> 이 시뮬레이션은 '개방된 물' 조건이 항상 충족된다는 가정 하에, 마인크래프트의 통계적 확률과 평균 낚시 시간을 기반으로 합니다.</p>
+                <p>낚시 시간은 평균값을 사용하며, 한 번 낚시에 걸리는 최소/최대 시간 변동은 반영되지 않습니다.</p>
+                <p>마인크래프트 하루는 20분입니다 (낮 10분, 밤 7분, 황혼/새벽 각각 1.5분).</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateFishingResults() {
+            const fishingDurationMinutes = parseInt(document.getElementById('fishingDurationMinutes').value);
+            const luckOfSeaLevel = parseInt(document.getElementById('luckOfSea').value);
+            const lureLevel = parseInt(document.getElementById('lureLevel').value);
+            const rainChance = parseInt(document.getElementById('rainChance').value);
+
+            const errorMessageDiv = document.getElementById('errorMessage');
+            const resultsDiv = document.getElementById('results');
+
+            // 입력값 유효성 검사
+            if (isNaN(fishingDurationMinutes) || fishingDurationMinutes <= 0) {
+                errorMessageDiv.textContent = "낚시할 총 현실 시간은 1분 이상의 숫자여야 합니다.";
+                resultsDiv.style.display = 'none';
+                return;
+            }
+            if (isNaN(rainChance) || rainChance < 0 || rainChance > 100) {
+                errorMessageDiv.textContent = "비 올 확률은 0에서 100 사이의 숫자여야 합니다.";
+                resultsDiv.style.display = 'none';
+                return;
+            }
+            errorMessageDiv.textContent = ""; // 오류 메시지 초기화
+
+            // --- 마인크래프트 시간 및 환경 설정 ---
+            const MC_DAY_SECONDS = 20 * 60; // 마인크래프트 하루 = 20분 = 1200초
+            const MC_DAY_LIGHT_SECONDS = 10 * 60; // 낮 시간 = 10분 = 600초
+            const MC_NIGHT_DARK_SECONDS = 7 * 60; // 밤 시간 = 7분 = 420초
+            const MC_TWILIGHT_SECONDS = 3 * 60; // 황혼/새벽 시간 = 3분 = 180초 (각각 1.5분)
+
+            // 낚시 시간의 기본 틱 (평균값)
+            let baseAvgTicksPerCatch = 100 + 450; // 기본 5초(100틱) + 무작위 0-45초(0-900틱) -> 평균 25초(500틱)
+            baseAvgTicksPerCatch -= (lureLevel * 100); // Lure 1당 100틱(5초) 감소
+            baseAvgTicksPerCatch = Math.max(20, baseAvgTicksPerCatch); // 최소 1초 (20틱)
+
+            // --- 낚시 횟수 계산 ---
+            let totalFishingSeconds = fishingDurationMinutes * 60;
+            let totalAttempts = 0;
+
+            const mcDays = Math.floor(totalFishingSeconds / MC_DAY_SECONDS);
+            const remainingSeconds = totalFishingSeconds % MC_DAY_SECONDS;
+
+            // 각 마인크래프트 날짜별로 시뮬레이션
+            for (let i = 0; i < mcDays; i++) {
+                const isRaining = (Math.random() * 100) < rainChance; // 비가 올지 말지 무작위 결정
+
+                // 낮 (밝음)
+                let currentAvgTicks = baseAvgTicksPerCatch;
+                if (isRaining) currentAvgTicks *= 0.8; // 비 오면 20% 단축
+                totalAttempts += Math.floor(MC_DAY_LIGHT_SECONDS / (currentAvgTicks / 20));
+
+                // 밤 (어두움)
+                currentAvgTicks = baseAvgTicksPerCatch * 2; // 밤에는 낚시 시간 2배
+                if (isRaining) currentAvgTicks *= 0.8; // 비 오면 20% 단축
+                totalAttempts += Math.floor(MC_NIGHT_DARK_SECONDS / (currentAvgTicks / 20));
+
+                // 황혼/새벽 (시간에 따라 밝기 변함. 여기서는 밤과 동일하게 어둡다고 가정)
+                currentAvgTicks = baseAvgTicksPerCatch * 2;
+                if (isRaining) currentAvgTicks *= 0.8;
+                totalAttempts += Math.floor(MC_TWILIGHT_SECONDS / (currentAvgTicks / 20));
+            }
+
+            // 남은 시간 처리 (마지막 날)
+            if (remainingSeconds > 0) {
+                const isRaining = (Math.random() * 100) < rainChance;
+
+                // 남은 시간 동안 낮, 밤, 황혼/새벽 비중을 정확히 나누기는 복잡하므로,
+                // 여기서는 남은 시간 전체에 대해 비중을 둔 평균 낚시 시간을 적용
+                // (대략 낮:밤:황혼 = 10:7:3 비율로 어두운 시간대가 많으므로, 어두운 환경 기준에 가깝게)
+                let currentAvgTicks = baseAvgTicksPerCatch * ( (MC_DAY_LIGHT_SECONDS + MC_NIGHT_DARK_SECONDS * 2 + MC_TWILIGHT_SECONDS * 2) / MC_DAY_SECONDS );
+                currentAvgTicks /= 2; // 다시 평균
+                if (isRaining) currentAvgTicks *= 0.8;
+                currentAvgTicks = Math.max(20, currentAvgTicks); // 최소 1초 (20틱)
+                
+                totalAttempts += Math.floor(remainingSeconds / (currentAvgTicks / 20));
+            }
+
+
+            // --- 확률 계산 로직 (기존과 동일) ---
+            const probabilities = {
+                0: {"treasure": 0.05, "fish": 0.85, "junk": 0.10},
+                1: {"treasure": 0.071, "fish": 0.848, "junk": 0.081},
+                2: {"treasure": 0.092, "fish": 0.847, "junk": 0.061},
+                3: {"treasure": 0.113, "fish": 0.845, "junk": 0.042}
+            };
+
+            const currentProb = probabilities[luckOfSeaLevel];
+            
+            const treasureItems = [
+                "마법이 부여된 책", 
+                "마법이 부여된 낚싯대", 
+                "마법이 부여된 활", 
+                "이름표", 
+                "안장", 
+                "앵무조개 껍데기"
+            ];
+
+            const fishCount = Math.round(totalAttempts * currentProb.fish);
+            const junkCount = Math.round(totalAttempts * currentProb.junk);
+            const treasureCount = Math.round(totalAttempts * currentProb.treasure);
+
+            const treasureDetails = {};
+            const probPerTreasureItem = 1 / treasureItems.length;
+            
+            treasureItems.forEach(item => {
+                treasureDetails[item] = Math.round(treasureCount * probPerTreasureItem);
+            });
+
+            // --- 결과 표시 ---
+            document.getElementById('displayDurationMinutes').textContent = fishingDurationMinutes;
+            document.getElementById('mcDays').textContent = mcDays;
+            document.getElementById('mcHours').textContent = Math.round(fishingDurationMinutes * (20 / 60)); // 실제 시간 분 * (MC 하루분 / 60분)
+            document.getElementById('displayLuckLevel').textContent = luckOfSeaLevel;
+            document.getElementById('displayLureLevel').textContent = lureLevel;
+            document.getElementById('displayRainChance').textContent = rainChance;
+            document.getElementById('totalAttempts').textContent = totalAttempts;
+            document.getElementById('fishCount').textContent = fishCount;
+            document.getElementById('fishPercentage').textContent = `(${(currentProb.fish * 100).toFixed(1)}%)`;
+            document.getElementById('junkCount').textContent = junkCount;
+            document.getElementById('junkPercentage').textContent = `(${(currentProb.junk * 100).toFixed(1)}%)`;
+            document.getElementById('treasureCount').textContent = treasureCount;
+            document.getElementById('treasurePercentage').textContent = `(${(currentProb.treasure * 100).toFixed(1)}%)`;
+
+            const treasureDetailsList = document.getElementById('treasureDetails');
+            treasureDetailsList.innerHTML = '';
+            for (const item in treasureDetails) {
+                const li = document.createElement('li');
+                li.textContent = `${item}: ${treasureDetails[item]}개`;
+                treasureDetailsList.appendChild(li);
+            }
+
+            resultsDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

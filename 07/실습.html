@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function calcSum(n){
+            let sum = 0
+            for(i = 1; i <= n; i++){
+                sum += i
+            }
+            return sum
+        }
+        let userInput = prompt("얼마까지 더할까요?")
+        let num = parseInt(userInput)
+        if(isNaN(num)){
+            document.write("올바른 숫자를 입력해 주세요")
+        }
+        else{
+            let total = calcSum(num) 
+            document.write("1부터 " + num + "까지 더하면 " + total);
+        }
+    </script>
+</body>
+</html>

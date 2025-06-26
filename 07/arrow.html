@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        const greet = function(){
+            return "좋은 한주 되었습니까?"
+        }
+        //화살표 함수
+        const greet2 = () => {return "좋은 한주 되었습니까?"}
+
+        //화살표 함수(중괄호와 1일떄는 return 생략가능)
+        const greet3 = () => "좋은 한주 되었습니까?"
+
+        document.write(greet3())
+    </script>
+</body>
+</html>

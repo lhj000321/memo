@@ -12,7 +12,7 @@
         <div class="nav-container">
             <!-- 로고 -->
             <div class="nav-logo">
-                <span onclick="">👨🏻‍💻</span>
+                <span>🌟</span>
                 <span>이현진</span>
             </div>
             <ul class="nav-menu">
@@ -23,6 +23,10 @@
                 <li><a href="#projects">프로젝트</a></li>
                 <li><a href="#contact">연락처</a></li>
             </ul>
+            <!-- 모바일 메뉴 토글 버튼 (햄버거) -->
+            <button class="nav-toggle" aria-label="메뉴 열기/닫기">
+                <span class="hamburger"></span>
+            </button>
         </div>
     </nav>
     <!-- 메인 화면 -->
@@ -38,19 +42,19 @@
                         클린하고 효율적인 코드를 작성하기 위해 노력합니다.
                     </p>
                     <div class="hero-buttons">
-                        <button class="btn-primary" onclick="">프로젝트 보기</button>
-                        <button class="btn-secondary" onclick="">이력서 다운로드</button>
+                        <a href="#projects" class="btn-primary">프로젝트 보기</a>
+                        <button class="btn-secondary" id="download-resume-btn">이력서 다운로드</button>
                     </div>                   
                     <div class="social-links">
-                        <button class="social-btn github" onclick="">🌖</button>
-                        <button class="social-btn linkedin" onclick="">🔗</button>
-                        <button class="social-btn email" onclick="">📧</button>
-                        <button class="social-btn portfolio" onclick="">🌐</button>                       
+                        <a href="https://github.com/lhj000321" target="_blank" class="social-btn github" aria-label="GitHub">🌖</a>
+                        <a href="https://linkedin.com/in/lhj000321" target="_blank" class="social-btn linkedin" aria-label="LinkedIn">🔗</a>
+                        <a href="mailto:gothf108@gmail.com" class="social-btn email" aria-label="Email">📧</a>
+                        <a href="#home" class="social-btn portfolio" aria-label="Portfolio">🌐</a>                       
                     </div>
                 </div>
                 <div class="hero-image">
-                    <div class="profile-image" onclick="">
-                        👱🏻
+                    <div class="profile-image">
+                        <img src="images/임시프로필.png" alt="이현진 프로필 이미지">
                     </div>
                 </div>
             </div>
@@ -128,7 +132,7 @@
             <div class="project-grid">
                 <!-- 프로젝트 카드 1 -->
                 <article class="project-card">
-                    <img src="images/project-placeholder.png" alt="프로젝트 1 이미지" class="project-image">
+                    <img src="images/블로그.png" alt="프로젝트 1 이미지" class="project-image">
                     <div class="project-info">
                         <h3 class="project-title">블로그</h3>
                         
@@ -140,7 +144,7 @@
                 </article>
                 <!-- 프로젝트 카드 2 -->
                 <article class="project-card">
-                    <img src="images/project-fishing-calc.png" alt="낚시 시뮬레이터 프로젝트" class="project-image">
+                    <img src="images/마인크레프트 낚시 시뮬레이터.PNG" alt="낚시 시뮬레이터 프로젝트" class="project-image">
                     <div class="project-info">
                         <h3 class="project-title">마인크래프트 낚시 시뮬레이터</h3>
                         <p class="project-description">마인크래프트의 낚시 메커니즘을 웹에서 시뮬레이션하는 도구입니다. 사용자가 다양한 조건을 설정하면 예상 결과를 통계적으로 보여줍니다.</p>
@@ -152,7 +156,7 @@
                 </article>
                 <!-- 프로젝트 카드 3 -->
                 <article class="project-card">
-                    <img src="images/project-portfolio.png" alt="개인 포트폴리오 프로젝트 이미지" class="project-image">
+                    <img src="images/개인포트폴리오.PNG" alt="개인 포트폴리오 프로젝트 이미지" class="project-image">
                     <div class="project-info">
                         <h3 class="project-title">개인 포트폴리오 웹사이트</h3>
                         <p class="project-description">HTML, CSS, JavaScript를 사용하여 제작한 반응형 개인 포트폴리오 사이트입니다.</p>
